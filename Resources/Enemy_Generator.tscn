@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3 uid="uid://w4tboptrjdyr"]
+
+[ext_resource type="Script" path="res://Scripts/Generator/enemy_generator.gd" id="1_uhrp5"]
+[ext_resource type="PackedScene" uid="uid://caildioybv47o" path="res://Resources/Enemy.tscn" id="2_1bvb7"]
+
+[node name="EnemyGenerator" type="Node2D" node_paths=PackedStringArray("timer")]
+script = ExtResource("1_uhrp5")
+enemy_prefab = ExtResource("2_1bvb7")
+timer = NodePath("Timer")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 5.0

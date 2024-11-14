@@ -1,11 +1,19 @@
-[gd_scene load_steps=9 format=3 uid="uid://02quyecvu0mt"]
+[gd_scene load_steps=17 format=3 uid="uid://02quyecvu0mt"]
 
 [ext_resource type="Texture2D" uid="uid://dlvitx2nw374k" path="res://1.png" id="1_bla2o"]
-[ext_resource type="Script" path="res://CharacterController.gd" id="1_u4rmi"]
+[ext_resource type="Script" path="res://Scripts/CharacterController.gd" id="1_u4rmi"]
 [ext_resource type="Texture2D" uid="uid://dncj3mducnoue" path="res://2.png" id="2_byh7x"]
 [ext_resource type="Texture2D" uid="uid://dsm20lv5fbisi" path="res://5.png" id="3_umscs"]
 [ext_resource type="Texture2D" uid="uid://di731wvbwmk78" path="res://3.png" id="4_o5mmo"]
 [ext_resource type="Texture2D" uid="uid://b4n4iegyhg2jv" path="res://4.png" id="5_3ltx3"]
+[ext_resource type="Script" path="res://Scripts/player_shooting.gd" id="7_prg33"]
+[ext_resource type="PackedScene" uid="uid://dnu8vljgmapc2" path="res://bullet_base.tscn" id="8_03ygv"]
+[ext_resource type="Script" path="res://Scripts/debug_bullet_spread.gd" id="9_dhhww"]
+[ext_resource type="Script" path="res://Scripts/Values/float_value.gd" id="10_7ck1d"]
+[ext_resource type="AudioStream" uid="uid://d3qj00p1kcfuf" path="res://Sounds/shot1.wav" id="11_rdx1s"]
+[ext_resource type="Script" path="res://Scripts/audio_stream_player.gd" id="12_fy3bm"]
+[ext_resource type="AudioStream" uid="uid://ck8tbeb8s5m3h" path="res://Sounds/shot2.wav" id="13_ilpt5"]
+[ext_resource type="AudioStream" uid="uid://dk2taqt1bid3o" path="res://Sounds/shot3.wav" id="14_wm6hd"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_qtlyg"]
 
@@ -64,10 +72,12 @@ animations = [{
 "speed": 5.0
 }]
 
-[node name="Ship" type="Node2D"]
+[node name="Ship" type="Node2D" node_paths=PackedStringArray("cooldown_timer")]
 script = ExtResource("1_u4rmi")
+cooldown_timer = NodePath("Cooldown")
 
 [node name="CharacterBody2D" type="CharacterBody2D" parent="."]
+collision_mask = 10
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="CharacterBody2D"]
 shape = SubResource("RectangleShape2D_qtlyg")
@@ -77,3 +87,35 @@ texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_06b7i")
 animation = &"Left"
 autoplay = "default"
+
+[node name="Shooting" type="Node2D" parent="." node_paths=PackedStringArray("spread")]
+position = Vector2(0, -26)
+script = ExtResource("7_prg33")
+projectile = ExtResource("8_03ygv")
+projectileNumber = 5
+spread = NodePath("../radius")
+
+[node name="Debug" type="Node2D" parent="Shooting" node_paths=PackedStringArray("spread")]
+rotation = -1.5708
+script = ExtResource("9_dhhww")
+spread = NodePath("../../radius")
+
+[node name="Cooldown" type="Timer" parent="."]
+wait_time = 0.05
+one_shot = true
+
+[node name="radius" type="Node2D" parent="."]
+script = ExtResource("10_7ck1d")
+absolute = true
+value = 0.15
+
+[node name="BulletSpawnDelay" type="Timer" parent="."]
+wait_time = 0.1
+
+[node name="AudioStreamPlayer" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("11_rdx1s")
+script = ExtResource("12_fy3bm")
+files = Array[AudioStreamWAV]([ExtResource("11_rdx1s"), ExtResource("13_ilpt5"), ExtResource("14_wm6hd")])
+
+[connection signal="shot_pressed" from="." to="Shooting" method="_on_shooting"]
+[connection signal="shot_pressed" from="." to="AudioStreamPlayer" method="_on_call"]

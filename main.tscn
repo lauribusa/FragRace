@@ -6,4 +6,4 @@
 
 [node name="Ship" parent="." instance=ExtResource("1_d6mbo")]
 position = Vector2(265, 214)
-speedModifier = 400
+speedModifier = 300
